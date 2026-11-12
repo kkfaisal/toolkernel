@@ -1,0 +1,46 @@
+[project]
+name = "toolkernel"
+version = "0.1.0"
+description = "Notebook-style code mode for MCP: one gateway, a persistent Python runtime, and an output guard."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp>=2.3,<3",
+    "numpy>=2.5.4",
+    "openpyxl>=3.1.5",
+    "pandas>=3.1.1",
+    "python-dateutil>=2.9",
+    "pyyaml>=6.0.3",
+    "starlette>=1.10.0",
+    "truststore>=0.10.5",
+    "uvicorn>=0.54.0",
+]
+
+[project.scripts]
+toolkernel = "toolkernel_gateway.cli:main"
+
+[project.optional-dependencies]
+bench = [
+    "anthropic>=2.8.0",
+    "openai>=1.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "toolkernel_gateway"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1.post1",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]

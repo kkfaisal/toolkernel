@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.toolkernel/
+mcp.json
+toolkernel.yaml
+.pytest_cache/
+dist/
+
+# Claude Code demo output (regenerate with examples/claude-code-demo/run.sh)
+examples/claude-code-demo/run.jsonl
+examples/claude-code-demo/run.new.jsonl
+examples/claude-code-demo/transcript.md
+.DS_Store

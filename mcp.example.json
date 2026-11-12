@@ -1,0 +1,52 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "examples/mock_github.py"
+      ]
+    },
+    "slack": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "examples/mock_slack.py"
+      ]
+    },
+    "crm": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "examples/mock_crm.py"
+      ]
+    },
+    "files": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "toolkernel_gateway.mcp_servers.files",
+        "--root",
+        ".toolkernel/bench-data"
+      ]
+    },
+    "web": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "-m",
+        "toolkernel_gateway.mcp_servers.web"
+      ],
+      "env": {
+        "TAVILY_API_KEY": "${env:TAVILY_API_KEY}",
+        "BRAVE_API_KEY": "${env:BRAVE_API_KEY}"
+      }
+    }
+  }
+}

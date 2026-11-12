@@ -1,0 +1,66 @@
+# ToolKernel settings. Every key is optional; these are the defaults unless noted.
+
+server:
+  host: 127.0.0.1          # bind address for /mcp, /v1, /api and the web UI
+  port: 7300
+  bridge_port: 7301        # internal: runtimes call tools through this port
+  bridge_host: 127.0.0.1   # on Linux with the docker driver, use 0.0.0.0 (or the docker0 address)
+  api_key: null            # or set TOOLKERNEL_API_KEY; when set, /mcp, /v1 and /api need "Authorization: Bearer <key>"
+
+data_dir: ./.toolkernel    # wrappers, session workspaces, logs, database
+
+upstreams:
+  config_file: ./mcp.json  # same "mcpServers" format as Claude Desktop / Claude Code
+  watch: true              # pick up edits to mcp.json automatically
+  upstream_wait_s: 15      # how long a call waits for a server that is still connecting
+  call_timeout_s: 120
+
+generator:
+  max_type_depth: 4
+  validate_output: warn    # off | warn | strict (check structured results against outputSchema)
+
+runtime:
+  driver: local            # local (subprocess, NOT isolated) | docker (hardened container per session)
+  state: stateful          # stateful | stateless (fresh runtime per execute_code)
+  image: toolkernel/runtime:1   # build with: toolkernel build-runtime
+  cpu: 1.0
+  memory: 1g
+  pids: 256
+  network: isolated       # isolated: runtimes reach only the bridge (internal network + relay)
+                           # or a docker network name like 'bridge' to allow internet access
+  bridge_host: host.docker.internal
+  hardened: false          # gVisor (runsc)
+  exec_timeout_s: 120
+  idle_timeout_s: 1800
+  static_check: true
+
+stash:
+  max_bytes: 10485760
+  ttl_s: 86400
+
+output:
+  budget_chars: 4000
+  head_ratio: 0.7
+  preview_threshold: { list: 20, dict: 50, str: 2000, dataframe_rows: 20 }
+  state_line: { enabled: true, max_items: 15, max_chars: 300 }
+  chars_per_token: 4
+
+agent_interface:
+  hybrid_call_tool: true
+  max_servers_in_description: 30
+
+policies:
+  default: allow
+  approval_timeout_s: 300
+  rules:
+    # Ask a person before any tool that declares itself destructive.
+    - match: "*"
+      when: { annotation: destructiveHint }
+      action: approve
+    # Examples:
+    # - match: "github.delete_*"
+    #   action: deny
+    # - match: "salesforce.*"
+    #   rate_limit: { calls: 60, per: minute }
+    # - match: "warehouse.query"
+    #   callers: [code]       # code | direct

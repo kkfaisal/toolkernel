@@ -70,15 +70,15 @@ sum(o["revenue"] for o in orders if o["region"] == "EMEA" and o["order_date"][5:
 
 ```mermaid
 flowchart LR
-    A["AI agent<br/><small>Claude Code · Cursor · Claude Desktop<br/>your own agent · any LLM via REST</small>"]
+    A["AI agent<br/>Claude Code · Cursor · Claude Desktop<br/>your own agent · any LLM via REST"]
     subgraph TK["ToolKernel gateway (self-hosted)"]
         direction TB
-        M["7 meta-tools<br/><small>execute_code · search_tools · describe_tool<br/>list_servers · call_tool · read_output · reset_runtime</small>"]
-        R["Persistent Python runtime<br/><small>one per agent session<br/>local process or hardened container</small>"]
-        G["Typed Python packages<br/><small>servers.github · servers.files · …<br/>generated from each tool's schema</small>"]
-        O["Output guard<br/><small>budget · previews · spill to file · state line</small>"]
-        P["Policies & approvals<br/><small>allow · deny · approve · rate limits</small>"]
-        U["Web UI<br/><small>what the model saw vs.<br/>what stayed in the sandbox</small>"]
+        M["7 meta-tools<br/>execute_code · search_tools · describe_tool<br/>list_servers · call_tool · read_output · reset_runtime"]
+        R["Persistent Python runtime<br/>one per agent session<br/>local process or hardened container"]
+        G["Typed Python packages<br/>servers.github · servers.files · …<br/>generated from each tool's schema"]
+        O["Output guard<br/>budget · previews · spill to file · state line"]
+        P["Policies & approvals<br/>allow · deny · approve · rate limits"]
+        U["Web UI<br/>what the model saw vs.<br/>what stayed in the sandbox"]
     end
     S1["GitHub MCP"]
     S2["Slack MCP"]
@@ -92,6 +92,7 @@ flowchart LR
     P --> S1 & S2 & S3 & S4
     R --> O
     O -- "small, guarded result" --> A
+    O -. "every step recorded" .-> U
 ```
 
 **Step by step:**
@@ -122,7 +123,7 @@ sequenceDiagram
     participant TK as ToolKernel
     participant RT as Python runtime
     participant MCP as MCP server
-    Agent->>TK: execute_code("orders = read_table(...); sum(...)")
+    Agent->>TK: execute_code(code that reads orders and sums one column)
     TK->>RT: run the code (variables persist)
     RT->>TK: read_table(path=...)  via bridge
     TK->>TK: policy check
